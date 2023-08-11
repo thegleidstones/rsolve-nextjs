@@ -58,7 +58,7 @@ export {
   OutlineLogoutIcon,
 }
 
-interface IIcon{
+interface IIcon {
   icon: string
   [key: string]: string | undefined
 }
