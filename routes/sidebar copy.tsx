@@ -41,7 +41,7 @@ const routes: IRoute[] = [
     name: 'Denúncia',
   },
   {
-    path: '/app/grievance',
+    path: '/example/grievance',
     icon: 'FormsIcon',
     name: 'Reclamação',
   },
@@ -76,37 +76,26 @@ const routes: IRoute[] = [
     name: 'Tables',
   },
   {
-    icon: 'MenuIcon',
+    icon: 'PagesIcon',
     name: 'Configurações',
     routes: [
       // submenu
       {
-        path: '/app/category',
+        path: '/example/category',
         name: 'Categorias de Denúncia',
       },
       {
-        path: '/app/reason',
+        path: '/example/reason',
         name: 'Motivos de Reclamação',
       },
       {
-        path: '/app/status',
-        name: 'Status da Denúncia',
+        path: '/example/status_form',
+        name: 'Status Form',
       },
       {
-        path: '/app/fact',
-        name: 'Fatos e recorrência',
+        path: '/example/status',
+        name: 'Status',
       },      
-      {
-        path: '/app/department',
-        name: 'Departamentos da Empresa',
-      },
-    ],
-  },
-  {
-    icon: 'PagesIcon',
-    name: 'Examples',
-    routes: [
-      // submenu    
       {
         path: '/example/login',
         name: 'Login',
@@ -128,7 +117,7 @@ const routes: IRoute[] = [
         name: 'Blank',
       },
     ],
-  },  
+  },
 ]
 
 export type {IRoute}
