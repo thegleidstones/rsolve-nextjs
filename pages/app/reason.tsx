@@ -1,89 +1,74 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
-import { Input, Label, Button, TableContainer, Table, TableHeader, TableCell, TableBody, TableRow, Avatar, Badge, TableFooter, Pagination } from '@roketid/windmill-react-ui'
-import PageTitle from 'example/components/Typography/PageTitle'
-import SectionTitle from 'example/components/Typography/SectionTitle'
+import { Input, Label, HelperText } from '@roketid/windmill-react-ui';
+import PageTitle from 'example/components/Typography/PageTitle';
+import SectionTitle from 'example/components/Typography/SectionTitle';
 
-import Layout from 'example/containers/Layout'
-import { EditIcon, TrashIcon } from 'icons'
+import Layout from 'example/containers/Layout';
+import ActionButtonGroup from 'components/ActionsButtonGroup/ActionBruttonsGroup';
+import ModalResolve from 'components/Modal/ModalRsolve';
+import TableRsolve from 'components/Table/TableRsolve';
+
+import { useReasons } from 'hooks/Reason/useReasons';
+import { useTables } from 'hooks/Table/useTable';
+import { useModals } from 'hooks/Modal/useModals';
+
+type Reason = {
+  id: string;
+  name: string;
+  companyId: string;
+}
 
 function Reason() {
-  
-  const [reasons, setReasons] = useState([]);
-  const [formValues, setFormValues] = useState({
-    name: "",
-  });
+  const { reasons, formValues, setFormValues, handleSubmit, handleInactivate, handleChange } = useReasons();
+  const { isModalOpen, isDeleteModalOpen, modal, openModal, closeModal, openDeleteModal, closeDeleteModal } = useModals();
+  const [isFormValid, setIsFormValid] = useState(false);
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  const router = useRouter();
 
-    try {
-      const response = await fetch("http://localhost:3344/reasons", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formValues),
-      });
-
-      if (response.ok) {
-        // Success, do something
-        console.log("Reason created successfully!");
-      } else {
-        // Handle error
-        console.error("Error creating status");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const handleChange = (e: any) => {
-    const { name, value } = e.target;
-    setFormValues((prevValues) => ({ ...prevValues, [name]: value }));
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:3344/reasons");
-        
-        const data = await response.json();
-
-        setReasons(data);
-        console.log(reasons);
-      } catch (error) {
-        console.error("Error fetching reasons:", error);
-      }
-    };
-
-    fetchData();
-  });
-
-  
   // setup pages control for every table
   const [pageTable, setPageTable] = useState(1);
 
   // pagination setup
-  const resultsPerPage = 10;
+  const resultsPerPage = 5;
   const totalResults = reasons.length;
+
+  const {
+    displayedReasons: displayedTableReasons,
+    // ... outras funções e estados do useReasonsTables
+  } = useTables({
+    data: reasons,
+    pageTable,
+    resultsPerPage,
+  });
+  
+  function openEditForm(reason: Reason) {
+    setFormValues(reason); // Preenche o formulário com os dados do registro selecionado
+  }  
 
   // pagination change control
   function onPageChangeTable(p: number) {
     setPageTable(p);
   }
 
-  // on page change, load new sliced data
-  // here you would make another server request for new data
+  function handleSave(e: any) {
+    e.preventDefault();
+    if (isFormValid) {
+      handleSubmit(e);
+      openModal();
+    }
+  }
+
   useEffect(() => {
-    setReasons(reasons.slice((pageTable - 1) * resultsPerPage, pageTable * resultsPerPage));
-  }, [pageTable]);
+    setIsFormValid(formValues.name.trim() !== '' && formValues.name.length >= 4);
+  }, [formValues.name]);  
 
   return (
     <Layout>
       <PageTitle>Motivo da Reclamação</PageTitle>
       <SectionTitle>Cadastro de motivos</SectionTitle>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div className="px-4 py-3 mb-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
           <Label>
             <span>Motivo</span>
@@ -94,75 +79,61 @@ function Reason() {
               className="mt-1" 
               placeholder="Informe o motivo da reclamação"
             />
+            {!isFormValid && (
+              <HelperText>O nome do motivo deve ter pelo menos 4 caracteres.</HelperText>
+            )}            
           </Label>
 
             <div className="flex flex-col flex-wrap space-y-4 md:flex-row md:items-end md:space-x-4 px-4 py-3 mb-6">
-            {/* <div className="flex flex-col flex-wrap mb-8 space-y-4 md:flex-row md:items-end md:space-x-4"> */}
-              <div>
-                <Button 
-                  type="submit" 
-                  className="bg-lime-600 hover:bg-lime-500" 
-                  size="larger"
-                >
-                  Registrar
-                </Button>
-              </div>
-              <div>
-                <Button className="bg-red-700 hover:bg-red-600" size="larger">Cancelar</Button>
-              </div>
             </div>
+
+            <ActionButtonGroup
+              isFormValid={isFormValid} 
+              onSave= {handleSave}
+              onCancel={() => {
+                router.push('/app/home'); // Redirecionamento para a rota /app/home
+              }}
+            />
         </div>
       </form>
 
-      <TableContainer className="mb-8">
-        <Table>
-          <TableHeader>
-            <tr>
-              <TableCell>Reason</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell>Updated At</TableCell>
-              {/* <TableCell>Date</TableCell> */}
-              <TableCell>Actions</TableCell>
-            </tr>
-          </TableHeader>
-          <TableBody>
-            {reasons.map((reason) => (
-              <TableRow key={reason.id}>
-                <TableCell>
-                  <span className="text-sm">{reason.name}</span>
-                </TableCell>
-                {/* <TableCell>
-                  <Badge type={user.status}>{user.status}</Badge>
-                </TableCell> */}
-                <TableCell>
-                  <span className="text-sm">{new Date(reason.createdAt).toLocaleDateString()}</span>
-                </TableCell>
-                <TableCell>
-                  <span className="text-sm">{new Date(reason.updatedAt).toLocaleDateString()}</span>
-                </TableCell>                
-                <TableCell>
-                  <div className="flex items-center space-x-4">
-                    <Button layout="link" size="small" aria-label="Edit">
-                      <EditIcon className="w-5 h-5" aria-hidden="true" />
-                    </Button>
-                    <Button layout="link" size="small" aria-label="Delete">
-                      <TrashIcon className="w-5 h-5" aria-hidden="true" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <TableFooter>
-          <Pagination
-            totalResults={totalResults}
-            resultsPerPage={resultsPerPage}
-            onChange={onPageChangeTable}
-            label="Table navigation"
-          />
-        </TableFooter>
-      </TableContainer>      
+      <TableRsolve
+        data={reasons}
+        columns={[
+          { label: 'ID', key: 'id' },
+          { label: 'Name', key: 'name' },
+        ]}
+        currentPage={pageTable}
+        totalResults={totalResults}
+        resultsPerPage={resultsPerPage}
+        onPageChangeTable={onPageChangeTable}
+        onEdit={openEditForm}
+        onDelete={openDeleteModal}
+      />
+
+      {isModalOpen && (
+        <ModalResolve
+          modalHeader="Cadastro de Motivos"
+          modalBody="Motivo de reclamação cadastrado com sucesso!"
+          onClose={closeModal}
+          successMessage={true}
+        />
+      )};
+
+    {isDeleteModalOpen && (
+      <ModalResolve
+        modalHeader="Excluir Motivo"
+        modalBody={`Deseja realmente excluir o motivo: ${modal?.name}?`}
+        onClose={closeDeleteModal}
+        onConfirm={() => {
+          if (modal) {
+            handleInactivate(modal.id);
+          }
+          closeDeleteModal();
+        }}
+        successMessage={false}
+      />
+    )}
     </Layout>
   )
 }
