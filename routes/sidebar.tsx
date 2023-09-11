@@ -24,16 +24,17 @@ export function routeIsActive (pathname: String, route: IRoute): boolean {
 }
 
 const routes: IRoute[] = [
+  // {
+  //   path: '/example', // the url
+  //   icon: 'HomeIcon', // the component being exported from icons/index.js
+  //   name: 'Dashboard', // name that appear in Sidebar
+  //   exact: true,
+  // },
   {
-    path: '/example', // the url
-    icon: 'HomeIcon', // the component being exported from icons/index.js
-    name: 'Dashboard', // name that appear in Sidebar
-    exact: true,
-  },
-  {
-    path: '/example/home', // the url
+    path: '/app/home', // the url
     icon: 'HomeIcon', // the component being exported from icons/index.js
     name: 'Home', // name that appear in Sidebar
+    // exact: true,
   },  
   {
     path: '/example/complaint',
@@ -46,6 +47,26 @@ const routes: IRoute[] = [
     name: 'Reclamação',
   },
   {
+    path: '/app/grievanceConsulting',
+    icon: 'FormsIcon',
+    name: 'Consultar Reclamação',
+  },
+  {
+    path: '/app/grievanceTreatmentConsulting',
+    icon: 'FormsIcon',
+    name: 'Tratar Reclamação',
+  },    
+  {
+    path: '/app/grievanceTreatment',
+    icon: 'FormsIcon',
+    name: 'Reclamação em Tratamento',
+  },  
+  {
+    path: '/app/login',
+    icon: 'PeopleIcon',
+    name: 'Login',
+  },  
+  {
     path: '/example/forms',
     icon: 'FormsIcon',
     name: 'Forms',
@@ -56,10 +77,15 @@ const routes: IRoute[] = [
     name: 'Cards',
   },
   {
+    path: '/app/charts',
+    icon: 'ChartsIcon',
+    name: 'Análise Gráfica',
+  },
+  {
     path: '/example/charts',
     icon: 'ChartsIcon',
     name: 'Charts',
-  },
+  },  
   {
     path: '/example/buttons',
     icon: 'ButtonsIcon',
@@ -75,6 +101,33 @@ const routes: IRoute[] = [
     icon: 'TablesIcon',
     name: 'Tables',
   },
+  {
+    icon: 'MenuIcon',
+    name: 'Administração',
+    routes: [
+      // submenu
+      {
+        path: '/app/company',
+        name: 'Empresas',
+      },
+      {
+        path: '/app/reason',
+        name: 'Filiais',
+      },
+      {
+        path: '/app/department',
+        name: 'Departamentos da Empresa',
+      },
+      {
+        path: '/app/user',
+        name: 'Usuários',
+      },
+      {
+        path: '/app/fact',
+        name: 'Permissões',
+      },      
+    ],
+  },   
   {
     icon: 'MenuIcon',
     name: 'Configurações',
@@ -95,40 +148,36 @@ const routes: IRoute[] = [
       {
         path: '/app/fact',
         name: 'Fatos e recorrência',
-      },      
-      {
-        path: '/app/department',
-        name: 'Departamentos da Empresa',
       },
     ],
-  },
-  {
-    icon: 'PagesIcon',
-    name: 'Examples',
-    routes: [
-      // submenu    
-      {
-        path: '/example/login',
-        name: 'Login',
-      },
-      {
-        path: '/example/create-account',
-        name: 'Create account',
-      },
-      {
-        path: '/example/forgot-password',
-        name: 'Forgot password',
-      },
-      {
-        path: '/example/404',
-        name: '404',
-      },
-      {
-        path: '/example/blank',
-        name: 'Blank',
-      },
-    ],
-  },  
+  }, 
+  // // {
+  // //   icon: 'PagesIcon',
+  // //   name: 'Examples',
+  // //   routes: [
+  // //     // submenu    
+  // //     {
+  // //       path: '/example/login',
+  // //       name: 'Login',
+  // //     },
+  // //     {
+  // //       path: '/example/create-account',
+  // //       name: 'Create account',
+  // //     },
+  // //     {
+  // //       path: '/example/forgot-password',
+  // //       name: 'Forgot password',
+  // //     },
+  // //     {
+  // //       path: '/example/404',
+  // //       name: '404',
+  // //     },
+  // //     {
+  // //       path: '/example/blank',
+  // //       name: 'Blank',
+  // //     },
+  // //   ],
+  // },  
 ]
 
 export type {IRoute}
