@@ -43,8 +43,13 @@ import {
   Legend,
 } from 'chart.js'
 import SectionTitle from 'example/components/Typography/SectionTitle'
+import TableRsolve from 'components/Table/TableRsolve'
+import { useGrievances } from 'hooks/Grievance/useGrievances'
+import { useTables } from 'hooks/Table/useTable'
 
 function Home() {
+  const { grievances } = useGrievances();
+
   Chart.register(
     ArcElement,
     CategoryScale,
@@ -56,27 +61,48 @@ function Home() {
     Legend
   )
 
-  const [page, setPage] = useState(1)
-  const [data, setData] = useState<ITableData[]>([])
+  // setup pages control for every table
+  const [pageTable, setPageTable] = useState(1);
 
   // pagination setup
-  const resultsPerPage = 10
-  const totalResults = response.length
+  const resultsPerPage = 5;
+  const totalResults = grievances.length;
+
+  const {
+    displayedGrievances: displayedTableGrievances,
+    // ... outras funções e estados do useTables
+  } = useTables({
+    data: grievances,
+    pageTable,
+    resultsPerPage,
+  });
 
   // pagination change control
-  function onPageChange(p: number) {
-    setPage(p)
-  }
+  function onPageChangeTable(p: number) {
+    setPageTable(p);
+  }  
 
-  // on page change, load new sliced data
-  // here you would make another server request for new data
-  useEffect(() => {
-    setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage))
-  }, [page])
+  // const [page, setPage] = useState(1)
+  // const [data, setData] = useState<ITableData[]>([])
+
+  // // pagination setup
+  // const resultsPerPage = 10
+  // const totalResults = response.length
+
+  // // pagination change control
+  // function onPageChange(p: number) {
+  //   setPage(p)
+  // }
+
+  // // on page change, load new sliced data
+  // // here you would make another server request for new data
+  // useEffect(() => {
+  //   setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage))
+  // }, [page])
 
   return (
     <Layout>
-      <PageTitle>Home</PageTitle>
+      {/* <PageTitle>Home</PageTitle> */}
 
       {/* <!-- Cards --> */}
       <SectionTitle>Denúncias</SectionTitle>
@@ -184,9 +210,27 @@ function Home() {
             className="mr-4"
           />
         </InfoCard>
-      </div>     
+      </div>
 
-      <TableContainer>
+      <TableRsolve
+        data={grievances}
+        columns={[
+          // { label: 'ID', key: 'id' },
+          { label: 'Data', key: 'createdAt' },
+          { label: 'Protocolo', key: 'protocol' },
+          { label: 'Situação', key: 'statusName' },
+          { label: 'Reclamante', key: 'userName' },
+          { label: 'Departamento', key: 'departmentName' },
+        ]}
+        currentPage={pageTable}
+        totalResults={totalResults}
+        resultsPerPage={resultsPerPage}
+        onPageChangeTable={onPageChangeTable}
+        onEdit={null}
+        onDelete={null}
+      />           
+
+      {/* <TableContainer>
         <Table>
           <TableHeader>
             <tr>
@@ -250,7 +294,7 @@ function Home() {
           <Line {...lineOptions} />
           <ChartLegend legends={lineLegends} />
         </ChartCard>
-      </div>
+      </div> */}
     </Layout>
   )
 }
