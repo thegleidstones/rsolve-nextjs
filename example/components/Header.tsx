@@ -6,13 +6,16 @@ import {
   SunIcon,
   BellIcon,
   MenuIcon,
+  HomeIcon,
   OutlinePersonIcon,
   OutlineCogIcon,
   OutlineLogoutIcon,
 } from 'icons'
 import { Avatar, Badge, Input, Dropdown, DropdownItem, WindmillContext } from '@roketid/windmill-react-ui'
+import { AuthContext } from 'context/AuthContext'
 
 function Header() {
+  const { user, company} = useContext(AuthContext);
   const { mode, toggleMode } = useContext(WindmillContext)
   const { toggleSidebar } = useContext(SidebarContext)
 
@@ -121,8 +124,12 @@ function Header() {
               onClose={() => setIsProfileMenuOpen(false)}
             >
               <DropdownItem tag="a" href="#">
+                <HomeIcon className="w-4 h-4 mr-3" aria-hidden="true" />
+                <span>{company?.companyName} - {company?.cnpj} </span>
+              </DropdownItem>
+              <DropdownItem tag="a" href="#">
                 <OutlinePersonIcon className="w-4 h-4 mr-3" aria-hidden="true" />
-                <span>Profile</span>
+                <span>Profile - {user?.name}</span>
               </DropdownItem>
               <DropdownItem tag="a" href="#">
                 <OutlineCogIcon className="w-4 h-4 mr-3" aria-hidden="true" />
