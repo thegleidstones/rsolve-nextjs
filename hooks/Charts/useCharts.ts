@@ -1,6 +1,11 @@
 import { fetchData } from "hooks/FetchData/fecthData"
 import { useEffect, useState } from "react"
 
+type GrievanceCompany = {
+  company: string;
+  total: number;
+}
+
 type GrievanceDepartment = {
   department: string;
   total: number;
@@ -23,22 +28,30 @@ interface ILegends {
 
 export function useCharts() {
   //Criando os estados necessários para a aplicação
+  const [grievancesCompany, setGrievancesCompany] = useState<GrievanceCompany[]>([]);
   const [grievancesDepartment, setGrievancesDepartment] = useState<GrievanceDepartment[]>([]);
   const [grievancesStatus, setGrievancesStatus] = useState<GrievanceStatus[]>([]);
   const [grievancesReason, setGrievancesReason] = useState<GrievanceReason[]>([]);
+  const [company, setCompany] = useState<string[]>([]);
   const [department, setDepartment] = useState<string[]>([]);
   const [status, setStatus] = useState<string[]>([]);
   const [reason, setReason] = useState<string[]>([]);
+  const [countByCompany, setCountByCompany] = useState<number[]>([]);
   const [countByDepartment, setCountByDepartment] = useState<number[]>([]);
   const [countByReason, setCountByReason] = useState<number[]>([]);
   const [countByStatus, setCountByStatus] = useState<number[]>([]);
+  const [colorByCompany, setColorByCompany] = useState<string[]>([]);
   const [colorByDepartment, setColorByDepartment] = useState<string[]>([]);
   const [colorByStatus, setColorByStatus] = useState<string[]>([]);
   const [colorByReason, setColorByReason] = useState<string[]>([]);
-  
+
   // Buscando dados da API
   useEffect(() => {
-    fetchData("grievances/view/count/department", setGrievancesDepartment,"");
+    fetchData("grievances/view/count/company", setGrievancesCompany, "");
+  }, []);
+
+  useEffect(() => {
+    fetchData("grievances/view/count/department", setGrievancesDepartment, "");
   }, []);
 
   useEffect(() => {
@@ -48,19 +61,29 @@ export function useCharts() {
   useEffect(() => {
     fetchData("grievances/view/count/reason", setGrievancesReason, "");
   }, [])
-  
+
   // Atualizo os dados vindos de Grievances, 
   // e os separo em três vetores, para preencher os dados do gráfico
   useEffect(() => {
+    const newCompany: string[] = [];
     const newDepartment: string[] = [];
     const newStatus: string[] = [];
     const newReason: string[] = [];
+    const newCountByCompany: number[] = [];
     const newCountByDepartment: number[] = [];
     const newCountByStatus: number[] = [];
     const newCountByReason: number[] = [];
+    let newColorByCompany: string[] = [];
     let newColorByDepartment: string[] = [];
     let newColorByStatus: string[] = [];
     let newColorByReason: string[] = [];
+
+    grievancesCompany.forEach((grievanceCompany) => {
+      newCompany.push(grievanceCompany.company);
+      newCountByCompany.push(grievanceCompany.total);
+    });
+
+    newColorByCompany = colorGenerator(newCompany);
 
     grievancesDepartment.forEach((grievanceDepartment) => {
       newDepartment.push(grievanceDepartment.department);
@@ -83,6 +106,9 @@ export function useCharts() {
 
     newColorByStatus = colorGenerator(newStatus);
 
+    setCompany(newCompany);
+    setCountByCompany(newCountByCompany);
+    setColorByCompany(newColorByCompany);
     setDepartment(newDepartment);
     setCountByDepartment(newCountByDepartment);
     setColorByDepartment(newColorByDepartment);
@@ -92,7 +118,7 @@ export function useCharts() {
     setReason(newReason);
     setCountByReason(newCountByReason);
     setColorByReason(newColorByReason);
-  }, [grievancesDepartment, grievancesReason, grievancesStatus]);
+  }, [grievancesCompany, grievancesDepartment, grievancesReason, grievancesStatus]);
 
 
   // Criando as legendas para o gráfico de doughnut (rosquinha)
@@ -119,54 +145,54 @@ export function useCharts() {
   //   }
   // }
 
-function colorGenerator(values: string[]) {
-  const colorArray: string[] = [];
+  function colorGenerator(values: string[]) {
+    const colorArray: string[] = [];
 
-  // Função para gerar uma cor aleatória em formato hexadecimal
-  function randomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+    // Função para gerar uma cor aleatória em formato hexadecimal
+    function randomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
     }
-    return color;
+
+    for (let i = 0; i < values.length; i++) {
+      colorArray[i] = randomColor();
+    }
+
+    return colorArray;
   }
 
-  for(let i = 0; i < values.length; i++) {
-    colorArray[i] = randomColor();
+  function colorGeneratorV2(values: string[], baseColor: string): string[] {
+    const generatedColors: string[] = [];
+
+    // Obtenha os componentes RGB da cor base
+    const baseRed = parseInt(baseColor.slice(1, 3), 16);
+    const baseGreen = parseInt(baseColor.slice(3, 5), 16);
+    const baseBlue = parseInt(baseColor.slice(5, 7), 16);
+
+    values.forEach((value) => {
+      // Gere variações dos componentes RGB da cor base
+      const r = Math.floor(Math.random() * 128) + baseRed;
+      const g = Math.floor(Math.random() * 128) + baseGreen;
+      const b = Math.floor(Math.random() * 128) + baseBlue;
+
+      // Garanta que os valores RGB não ultrapassem 255
+      const randomR = Math.min(255, r);
+      const randomG = Math.min(255, g);
+      const randomB = Math.min(255, b);
+
+      // Converta os componentes RGB para uma cor hexadecimal
+      const randomColor = `#${randomR.toString(16)}${randomG.toString(16)}${randomB.toString(16)}`;
+
+      // Adicione a cor gerada ao vetor
+      generatedColors.push(randomColor);
+    });
+
+    return generatedColors;
   }
-
-  return colorArray;
-}
-
-function colorGeneratorV2(values: string[], baseColor: string): string[] {
-  const generatedColors: string[] = [];
-
-  // Obtenha os componentes RGB da cor base
-  const baseRed = parseInt(baseColor.slice(1, 3), 16);
-  const baseGreen = parseInt(baseColor.slice(3, 5), 16);
-  const baseBlue = parseInt(baseColor.slice(5, 7), 16);
-
-  values.forEach((value) => {
-    // Gere variações dos componentes RGB da cor base
-    const r = Math.floor(Math.random() * 128) + baseRed;
-    const g = Math.floor(Math.random() * 128) + baseGreen;
-    const b = Math.floor(Math.random() * 128) + baseBlue;
-
-    // Garanta que os valores RGB não ultrapassem 255
-    const randomR = Math.min(255, r);
-    const randomG = Math.min(255, g);
-    const randomB = Math.min(255, b);
-
-    // Converta os componentes RGB para uma cor hexadecimal
-    const randomColor = `#${randomR.toString(16)}${randomG.toString(16)}${randomB.toString(16)}`;
-
-    // Adicione a cor gerada ao vetor
-    generatedColors.push(randomColor);
-  });
-
-  return generatedColors;
-}
 
   // Função para obter a cor com base no status (apenas um exemplo, você pode personalizar isso)
   function getColorBasedOnStatusV2(status: string) {
@@ -178,29 +204,53 @@ function colorGeneratorV2(values: string[], baseColor: string): string[] {
       case 'Finalizado':
         return '#84cc16';
       case 'Pendente':
-        return '#dc2626';      
+        return '#dc2626';
       case 'Improcedente':
         return '#9333ea';
       default:
         return '#6b7280';
     }
-  }  
+  }
 
   // const doughnutLegendsOLD: ILegends[] = [
   //   { title: 'Shirts', color: 'bg-blue-500' },
   //   { title: 'Shoes', color: 'bg-teal-600' },
   //   { title: 'Bags', color: 'bg-purple-600' },
   // ]
-  
+
   // const lineLegends: ILegends[] = [
   //   { title: 'Organic', color: 'bg-teal-600' },
   //   { title: 'Paid', color: 'bg-purple-600' },
   // ]
-  
+
   // const barLegends: ILegends[] = [
   //   { title: 'Shoes', color: 'bg-teal-600' },
   //   { title: 'Bags', color: 'bg-purple-600' },
   // ]
+  const doughnutOptionsCompany = {
+    data: {
+      datasets: [
+        {
+          data: countByCompany,
+          /**
+           * These colors come from Tailwind CSS palette
+           * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
+           */
+          backgroundColor: colorByCompany,
+          label: 'Reclamações por empresa',
+        },
+      ],
+      labels: company,
+    },
+    options: {
+      responsive: true,
+      cutoutPercentage: 80,
+    },
+    legend: {
+      display: true,
+    },
+  }
+
   const doughnutOptionsDepartment = {
     data: {
       datasets: [
@@ -271,8 +321,8 @@ function colorGeneratorV2(values: string[], baseColor: string): string[] {
     legend: {
       display: true,
     },
-  }  
-  
+  }
+
   // const lineOptions = {
   //   data: {
   //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -328,7 +378,7 @@ function colorGeneratorV2(values: string[], baseColor: string): string[] {
   //     display: false,
   //   },
   // }
-  
+
   // const barOptions = {
   //   data: {
   //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -360,8 +410,9 @@ function colorGeneratorV2(values: string[], baseColor: string): string[] {
   return {
     grievancesReason,
     setGrievancesReason,
-    grievancesStatus, 
+    grievancesStatus,
     setGrievancesStatus,
+    doughnutOptionsCompany,
     doughnutOptionsDepartment,
     doughnutOptionsReason,
     doughnutOptionsStatus,
