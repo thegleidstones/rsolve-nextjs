@@ -18,7 +18,7 @@ import {
 import { useCharts } from 'hooks/Charts/useCharts'
 
 function Charts() {
-  const {doughnutOptionsDepartment, doughnutOptionsStatus, doughnutOptionsReason} = useCharts();
+  const { doughnutOptionsCompany, doughnutOptionsDepartment, doughnutOptionsStatus, doughnutOptionsReason } = useCharts();
   Chart.register(
     ArcElement,
     BarElement,
@@ -36,6 +36,11 @@ function Charts() {
       <PageTitle>Análise Gráfica das Reclamações</PageTitle>
 
       <div className="grid gap-6 mb-8 md:grid-cols-3">
+        <ChartCard title="Reclamações por Empresa">
+          <Doughnut {...doughnutOptionsCompany} />
+          {/* <ChartLegend legends={doughnutLegends} /> */}
+        </ChartCard>
+
         <ChartCard title="Reclamações por Departamento">
           <Doughnut {...doughnutOptionsDepartment} />
           {/* <ChartLegend legends={doughnutLegends} /> */}
@@ -49,7 +54,7 @@ function Charts() {
         <ChartCard title="Reclamações por Motivos">
           <Doughnut {...doughnutOptionsReason} />
           {/* <ChartLegend legends={doughnutLegends} /> */}
-        </ChartCard>        
+        </ChartCard>
 
         {/* <ChartCard title="Lines">
           <Line {...lineOptions} />
