@@ -11,6 +11,11 @@ type GrievanceDepartment = {
   total: number;
 }
 
+type GrievanceAnonymity = {
+  anonymity: string;
+  total: number;
+}
+
 type GrievanceStatus = {
   status: string;
   total: number;
@@ -28,18 +33,22 @@ interface ILegends {
 
 export function useCharts() {
   //Criando os estados necessários para a aplicação
+  const [grievancesAnonymity, setGrievancesAnonymity] = useState<GrievanceAnonymity[]>([]);
   const [grievancesCompany, setGrievancesCompany] = useState<GrievanceCompany[]>([]);
   const [grievancesDepartment, setGrievancesDepartment] = useState<GrievanceDepartment[]>([]);
   const [grievancesStatus, setGrievancesStatus] = useState<GrievanceStatus[]>([]);
   const [grievancesReason, setGrievancesReason] = useState<GrievanceReason[]>([]);
+  const [anonymity, setAnonymity] = useState<string[]>([]);
   const [company, setCompany] = useState<string[]>([]);
   const [department, setDepartment] = useState<string[]>([]);
   const [status, setStatus] = useState<string[]>([]);
   const [reason, setReason] = useState<string[]>([]);
+  const [countByAnonymity, setCountByAnonymity] = useState<number[]>([]);
   const [countByCompany, setCountByCompany] = useState<number[]>([]);
   const [countByDepartment, setCountByDepartment] = useState<number[]>([]);
   const [countByReason, setCountByReason] = useState<number[]>([]);
   const [countByStatus, setCountByStatus] = useState<number[]>([]);
+  const [colorByAnonymity, setColorByAnonymity] = useState<string[]>([]);
   const [colorByCompany, setColorByCompany] = useState<string[]>([]);
   const [colorByDepartment, setColorByDepartment] = useState<string[]>([]);
   const [colorByStatus, setColorByStatus] = useState<string[]>([]);
@@ -47,11 +56,19 @@ export function useCharts() {
 
   // Buscando dados da API
   useEffect(() => {
+    fetchData("grievances/view/count/anonymity", setGrievancesAnonymity, "");
+  }, []);
+
+  useEffect(() => {
     fetchData("grievances/view/count/company", setGrievancesCompany, "");
   }, []);
 
   useEffect(() => {
     fetchData("grievances/view/count/department", setGrievancesDepartment, "");
+  }, []);
+
+  useEffect(() => {
+    fetchData("grievances/view/count/is-anonymous", setGrievancesDepartment, "");
   }, []);
 
   useEffect(() => {
@@ -65,18 +82,28 @@ export function useCharts() {
   // Atualizo os dados vindos de Grievances, 
   // e os separo em três vetores, para preencher os dados do gráfico
   useEffect(() => {
+    const newAnonymity: string[] = [];
     const newCompany: string[] = [];
     const newDepartment: string[] = [];
     const newStatus: string[] = [];
     const newReason: string[] = [];
+    const newCountByAnonymity: number[] = [];
     const newCountByCompany: number[] = [];
     const newCountByDepartment: number[] = [];
     const newCountByStatus: number[] = [];
     const newCountByReason: number[] = [];
+    let newColorByAnonymity: string[] = [];
     let newColorByCompany: string[] = [];
     let newColorByDepartment: string[] = [];
     let newColorByStatus: string[] = [];
     let newColorByReason: string[] = [];
+
+    grievancesAnonymity.forEach((grievanceAnonymity) => {
+      newAnonymity.push(grievanceAnonymity.anonymity);
+      newCountByAnonymity.push(grievanceAnonymity.total);
+    })
+
+    newColorByAnonymity = colorGenerator(newAnonymity);
 
     grievancesCompany.forEach((grievanceCompany) => {
       newCompany.push(grievanceCompany.company);
@@ -106,6 +133,9 @@ export function useCharts() {
 
     newColorByStatus = colorGenerator(newStatus);
 
+    setAnonymity(newAnonymity);
+    setCountByAnonymity(newCountByAnonymity);
+    setColorByAnonymity(newColorByAnonymity);
     setCompany(newCompany);
     setCountByCompany(newCountByCompany);
     setColorByCompany(newColorByCompany);
@@ -118,7 +148,7 @@ export function useCharts() {
     setReason(newReason);
     setCountByReason(newCountByReason);
     setColorByReason(newColorByReason);
-  }, [grievancesCompany, grievancesDepartment, grievancesReason, grievancesStatus]);
+  }, [grievancesAnonymity, grievancesCompany, grievancesDepartment, grievancesReason, grievancesStatus]);
 
 
   // Criando as legendas para o gráfico de doughnut (rosquinha)
@@ -227,6 +257,30 @@ export function useCharts() {
   //   { title: 'Shoes', color: 'bg-teal-600' },
   //   { title: 'Bags', color: 'bg-purple-600' },
   // ]
+  const doughnutOptionsAnonymity = {
+    data: {
+      datasets: [
+        {
+          data: countByAnonymity,
+          /**
+           * These colors come from Tailwind CSS palette
+           * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
+           */
+          backgroundColor: colorByCompany,
+          label: 'Reclamações por Anonimidade',
+        },
+      ],
+      labels: anonymity,
+    },
+    options: {
+      responsive: true,
+      cutoutPercentage: 80,
+    },
+    legend: {
+      display: true,
+    },
+  }
+
   const doughnutOptionsCompany = {
     data: {
       datasets: [
@@ -412,6 +466,7 @@ export function useCharts() {
     setGrievancesReason,
     grievancesStatus,
     setGrievancesStatus,
+    doughnutOptionsAnonymity,
     doughnutOptionsCompany,
     doughnutOptionsDepartment,
     doughnutOptionsReason,
