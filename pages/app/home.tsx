@@ -46,9 +46,23 @@ import SectionTitle from 'example/components/Typography/SectionTitle'
 import TableRsolve from 'components/Table/TableRsolve'
 import { useGrievances } from 'hooks/Grievance/useGrievances'
 import { useTables } from 'hooks/Table/useTable'
+import { fetchData } from 'hooks/FetchData/fecthData'
 
 function Home() {
+  const [statuses, setStatuses] = useState([]);
+  const [countByStatuses, setCountByStatuses] = useState([]);
   const { grievances } = useGrievances();
+
+  useEffect(() => {
+    fetchData("statuses", setStatuses, "");
+  }, []);
+
+  useEffect(() => {
+    fetchData("grievances/view/count/status", setCountByStatuses, "");
+  }, []);
+
+  console.log("Count By Statuses");
+  console.log(countByStatuses);
 
   Chart.register(
     ArcElement,
@@ -80,7 +94,7 @@ function Home() {
   // pagination change control
   function onPageChangeTable(p: number) {
     setPageTable(p);
-  }  
+  }
 
   // const [page, setPage] = useState(1)
   // const [data, setData] = useState<ITableData[]>([])
@@ -99,6 +113,23 @@ function Home() {
   // useEffect(() => {
   //   setData(response.slice((page - 1) * resultsPerPage, page * resultsPerPage))
   // }, [page])
+
+  function getColorBasedOnStatus(status: string) {
+    switch (status) {
+      case 'Recebido':
+        return "bg-orange-100 dark:bg-orange-500";
+      case 'Em Tratamento':
+        return "bg-blue-100 dark:bg-blue-500";
+      case 'Finalizado':
+        return "bg-lime-100 dark:bg-lime-500";
+      case 'Pendente':
+        return "bg-red-100 dark:bg-red-500";
+      case 'Improcedente':
+        return "bg-purple-100 dark:bg-purple-500";
+      default:
+        return '#6b7280';
+    }
+  }
 
   return (
     <Layout>
@@ -145,7 +176,7 @@ function Home() {
             bgColorClass="bg-blue-100 dark:bg-blue-500"
             className="mr-4"
           />
-        </InfoCard>        
+        </InfoCard>
 
         <InfoCard title="Finalizadas" value="35">
           {/* @ts-ignore */}
@@ -161,55 +192,17 @@ function Home() {
       {/* <!-- Cards --> */}
       <SectionTitle>Reclamações</SectionTitle>
       <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-5">
-        <InfoCard title="Recebidas" value="35">
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={PeopleIcon}
-            iconColorClass="text-orange-500 dark:text-orange-100"
-            bgColorClass="bg-orange-100 dark:bg-orange-500"
-            className="mr-4"
-          />
-        </InfoCard>
-
-        <InfoCard title="Em Tratamento" value="6">
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={MoneyIcon}
-            iconColorClass="text-green-500 dark:text-green-100"
-            bgColorClass="bg-green-100 dark:bg-green-500"
-            className="mr-4"
-          />
-        </InfoCard>
-
-        <InfoCard title="Pendentes" value="19">
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={CartIcon}
-            iconColorClass="text-blue-500 dark:text-blue-100"
-            bgColorClass="bg-blue-100 dark:bg-blue-500"
-            className="mr-4"
-          />
-        </InfoCard>
-
-        <InfoCard title="Improcedente" value="19">
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={CartIcon}
-            iconColorClass="text-blue-500 dark:text-blue-100"
-            bgColorClass="bg-blue-100 dark:bg-blue-500"
-            className="mr-4"
-          />
-        </InfoCard>        
-
-        <InfoCard title="Finalizadas" value="35">
-          {/* @ts-ignore */}
-          <RoundIcon
-            icon={ChatIcon}
-            iconColorClass="text-teal-500 dark:text-teal-100"
-            bgColorClass="bg-teal-100 dark:bg-teal-500"
-            className="mr-4"
-          />
-        </InfoCard>
+        {countByStatuses.map((countByStatus) => (
+          <InfoCard key={countByStatus.id} title={countByStatus.status} value={countByStatus.total}>
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={PeopleIcon}
+              iconColorClass="text-orange-500 dark:text-orange-100"
+              bgColorClass={getColorBasedOnStatus(countByStatus.status)}
+              className="mr-4"
+            />
+          </InfoCard>
+        ))}
       </div>
 
       <TableRsolve
@@ -228,7 +221,7 @@ function Home() {
         onPageChangeTable={onPageChangeTable}
         onEdit={null}
         onDelete={null}
-      />           
+      />
 
       {/* <TableContainer>
         <Table>
