@@ -18,7 +18,7 @@ import {
 import { useCharts } from 'hooks/Charts/useCharts'
 
 function Charts() {
-  const { doughnutOptionsAnonymity, doughnutOptionsCompany, doughnutOptionsDepartment, doughnutOptionsStatus, doughnutOptionsReason } = useCharts();
+  const { doughnutOptionsAnonymity, doughnutOptionsCompany, doughnutOptionsDepartment, doughnutOptionsReason, doughnutOptionsStatus, doughnutOptionsWitness } = useCharts();
   Chart.register(
     ArcElement,
     BarElement,
@@ -58,6 +58,11 @@ function Charts() {
 
         <ChartCard title="Reclamações por Motivos">
           <Doughnut {...doughnutOptionsReason} />
+          {/* <ChartLegend legends={doughnutLegends} /> */}
+        </ChartCard>
+
+        <ChartCard title="Reclamações por Testemunhas">
+          <Doughnut {...doughnutOptionsWitness} />
           {/* <ChartLegend legends={doughnutLegends} /> */}
         </ChartCard>
 
