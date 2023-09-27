@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { AuthContext } from 'context/AuthContext';
 import { fetchData } from 'hooks/FetchData/fecthData';
 import { useCallback, useContext, useEffect, useState } from 'react';
@@ -53,7 +54,7 @@ export function useGrievances() {
     userId: user?.id,
     userName: "",
     userEmail: "",
-    branchId: "62cf61af-23a7-4236-9eb9-69e297fd15dc",
+    branchId: "c18f69df-7ed8-480d-9f25-1bb19e2df2ba",
     departmentId: "",
     departmentName: "",
     factId: "",
@@ -100,7 +101,7 @@ export function useGrievances() {
           userId: user?.id,
           userName: "",
           userEmail: "",
-          branchId: "62cf61af-23a7-4236-9eb9-69e297fd15dc",
+          branchId: "c18f69df-7ed8-480d-9f25-1bb19e2df2ba",
           departmentId: "",
           departmentName: "",
           factId: "",
@@ -124,7 +125,7 @@ export function useGrievances() {
     fetchData("grievances/view", setGrievances, "");
   }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitOld(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     try {
@@ -144,9 +145,15 @@ export function useGrievances() {
         body: JSON.stringify(formGrievance),
       });
 
+      console.log("Analisando o RESPONSE!");
+      console.log(response);
+
       if (response.ok) {
         console.log("Analisando o RESPONSE!");
         console.log(response);
+        console.log(response.body);
+        console.log(response.formData);
+        console.log(response.status);
         console.log("Grievance created successfully!");
         // fetchData("grievances", setGrievances, "");
         setFormGrievance({
@@ -166,7 +173,7 @@ export function useGrievances() {
           userId: user?.id,
           userName: "",
           userEmail: "",
-          branchId: "62cf61af-23a7-4236-9eb9-69e297fd15dc",
+          branchId: "c18f69df-7ed8-480d-9f25-1bb19e2df2ba",
           departmentId: "",
           departmentName: "",
           factId: "",
@@ -180,6 +187,76 @@ export function useGrievances() {
       }
     } catch (error) {
       console.error("Error:", error);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>, setProtocol: any) {
+    e.preventDefault();
+
+    try {
+      let url = "http://localhost:3344/grievances";
+      let method = "POST";
+
+      if (formGrievance.id) {
+        url += `/${formGrievance.id}`;
+        method = "PUT";
+      }
+
+      const formJson = JSON.stringify(formGrievance);
+
+      const response = await axios.post(url, formJson, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+      });
+
+      console.log("Analisando o RESPONSE!");
+      console.log(response);
+
+      setProtocol(response.data.protocol);
+
+      // if (response.ok) {
+      //   console.log("Analisando o RESPONSE!");
+      //   console.log(response);
+      //   console.log(response.body);
+      //   console.log(response.formData);
+      //   console.log(response.status);
+      //   console.log("Grievance created successfully!");
+      //   // fetchData("grievances", setGrievances, "");
+      //   setFormGrievance({
+      //     id: "",
+      //     isAnonymous: true,
+      //     isOccuredInYourCompany: true,
+      //     isHaveAWitness: false,
+      //     protocol: "",
+      //     grievanceDescription: "",
+      //     witness: "",
+      //     witnessDepartmentId: "",
+      //     witnessDepartment: "",
+      //     companyId: company?.id,
+      //     tradeName: "",
+      //     reasonId: "",
+      //     reasonName: "",
+      //     userId: user?.id,
+      //     userName: "",
+      //     userEmail: "",
+      //     branchId: "c18f69df-7ed8-480d-9f25-1bb19e2df2ba",
+      //     departmentId: "",
+      //     departmentName: "",
+      //     factId: "",
+      //     factName: "",
+      //     createdAt: new Date(),
+      //     statusId: "",
+      //     statusName: "",
+      //   });
+      // } else {
+      //   console.error("Error creating grievance");
+      // }
+    } catch (error) {
+      console.error("Error:", error);
+      setProtocol("error");
     }
   }
 
