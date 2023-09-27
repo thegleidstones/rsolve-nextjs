@@ -36,6 +36,7 @@ function Grievance() {
   const { isModalOpen, isDeleteModalOpen, modal, openModal, closeModal, openDeleteModal, closeDeleteModal } = useModals();
   const [isFormValid, setIsFormValid] = useState(false);
   const [departments, setDepartments] = useState([]);
+  const [protocol, setProtocol] = useState([]);
   const [witnessDepartments, setWitnessDepartments] = useState([]);
   const [companies, setCompanies] = useState([]);
   const [facts, setFacts] = useState([]);
@@ -107,7 +108,7 @@ function Grievance() {
   function handleSave(e: any) {
     e.preventDefault();
     if (isFormValid) {
-      handleSubmit(e);
+      handleSubmit(e, setProtocol);
       openModal();
     } else {
       console.log("Não validou o form e por isso não enviou a REQ para a API!")
@@ -368,7 +369,7 @@ function Grievance() {
       {isModalOpen && (
         <ModalResolve
           modalHeader="Registro de Reclamações"
-          modalBody="Sua reclamação foi registrada com sucesso! Acompanhe seu protocolo para os demais andamentos!"
+          modalBody={protocol}
           onClose={closeModal}
           successMessage={true}
         />
