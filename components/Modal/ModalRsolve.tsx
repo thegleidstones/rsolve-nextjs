@@ -13,7 +13,15 @@ const ModalResolve: React.FC<ModalResolveProps> = ({ modalHeader, modalBody, onC
   return (
     <Modal isOpen={true} onClose={onClose}>
       <ModalHeader>{modalHeader}</ModalHeader>
-      <ModalBody>{modalBody}</ModalBody>
+      <ModalBody>
+        <br></br>
+        <span>
+          O número do protocolo da sua reclamação é:
+        </span>
+        <span className='bg-lime-600 text-white ml-3 px-1 py-1'>
+          {modalBody}
+        </span>
+      </ModalBody>
       <ModalFooter>
         {successMessage ? (
           // Mostra apenas o botão "Ok!" para mensagens de sucesso
