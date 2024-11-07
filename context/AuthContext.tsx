@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
 import Router from "next/router";
-import { setCookie, parseCookies } from "nookies";
+import { setCookie, parseCookies, destroyCookie } from "nookies";
 import { api } from "services/api";
 
 
@@ -14,6 +14,7 @@ type User = {
   id: string;
   email: string;
   name: string;
+  isAdmin: boolean;
 }
 
 type SignInCredentials = {
@@ -33,6 +34,11 @@ type AuthProviderProps = {
   children: ReactNode;
 }
 
+export function signOut() {
+  destroyCookie(undefined, "rsolve.auth-token", { path: "/" });
+  Router.push("/app/login");
+}
+
 export const AuthContext = createContext({} as AuthContextData);
 
 export function AuthProvider({ children }: AuthProviderProps) {
@@ -40,7 +46,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [company, setCompany] = useState<Company>();
   const isAuthenticated = !!user;
 
-  async function signIn({cnpj, email, password}:SignInCredentials) {
+  async function signIn({ cnpj, email, password }: SignInCredentials) {
     try {
       const response = await api.post("sessions", {
         cnpj,
@@ -55,10 +61,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         path: "/"
       });
 
-      setCookie(undefined, "rsolve.auth-refreshToken", refreshToken, {
-        maxAge: 60 * 60 * 24 * 30, // 30 dias
-        path: "/"
-      });
+      // setCookie(undefined, "rsolve.auth-refreshToken", refreshToken, {
+      //   maxAge: 60 * 60 * 24 * 30, // 30 dias
+      //   path: "/"
+      // });
 
       console.log(company);
       console.log(user);
@@ -69,11 +75,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         cnpj,
         companyName: company.companyName
       });
-  
+
       setUser({
         id: user.id,
         email,
-        name: user.name
+        name: user.name,
+        isAdmin: user.isAdmin
       });
 
       api.defaults.headers['Authorization'] = `Bearer ${token}`;
@@ -91,14 +98,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (token) {
       api.get("/companies/mycompany").then(response => {
         const { id, companyName, cnpj } = response.data;
-        setCompany({id, companyName, cnpj });
+        setCompany({ id, companyName, cnpj });
+      }).catch(error => {
+        alert("Sua sessão expirou. Faça login novamente!");
+        signOut();
       });
 
       api.get("/users/myuser").then(response => {
-        console.log(response);
-        const {id, email, name } = response.data;
-        setUser({ id, email, name });
+        const { id, email, name, isAdmin } = response.data;
+        setUser({ id, email, name, isAdmin });
+      }).catch(error => {
+        signOut();
       });
+    } else {
+      signOut();
     }
   }, []);
 
@@ -106,5 +119,5 @@ export function AuthProvider({ children }: AuthProviderProps) {
     <AuthContext.Provider value={{ company, isAuthenticated, signIn, user }}>
       {children}
     </AuthContext.Provider>
-  )  
+  )
 }
