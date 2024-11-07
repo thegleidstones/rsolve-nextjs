@@ -7,6 +7,7 @@ import type { AppProps } from 'next/app'
 import { AuthProvider } from 'context/AuthContext';
 import { SelectedGrievanceProvider } from 'hooks/GrievanceTreatment/useSelectedGrievance';
 import GrievanceTreatmentConsulting from './app/grievanceTreatmentConsulting';
+import { SelectedComplaintProvider } from 'hooks/ComplaintTreatment/useSelectedComplaint';
 
 function MyApp({ Component, pageProps }: AppProps) {
   // suppress useLayoutEffect warnings when running outside a browser
@@ -14,12 +15,14 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <AuthProvider>
-      <SelectedGrievanceProvider>
-        <Windmill usePreferences={true}>
-          <Component {...pageProps} />
+      <SelectedComplaintProvider>
+        <SelectedGrievanceProvider>
+          <Windmill usePreferences={true}>
+            <Component {...pageProps} />
             {/* <GrievanceTreatmentConsulting /> */}
-        </Windmill>
-      </SelectedGrievanceProvider>
+          </Windmill>
+        </SelectedGrievanceProvider>
+      </SelectedComplaintProvider>
     </AuthProvider>
   )
 }
