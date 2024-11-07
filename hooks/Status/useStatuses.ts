@@ -1,6 +1,7 @@
-import { AuthContext } from 'context/AuthContext';
-import { fetchData } from 'hooks/FetchData/fecthData';
+import { AuthContext, signOut } from 'context/AuthContext';
+import { fetchData, fetchDataStatus } from 'hooks/FetchData/fecthData';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { api } from 'services/api';
 
 type Status = {
   id: string;
@@ -30,10 +31,10 @@ export function useStatuses() {
   // }
 
   useEffect(() => {
-    fetchData("statuses", setStatuses, "");
+    fetchDataStatus("statuses", setStatuses, "");
   }, []);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitOld(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     try {
@@ -55,11 +56,85 @@ export function useStatuses() {
 
       if (response.ok) {
         console.log("Status created successfully!");
-        fetchData("statuses", setStatuses, "");
+        fetchDataStatus("statuses", setStatuses, "");
         setFormValues({ id: "", name: "", companyId: company?.id });
       } else {
         console.error("Error creating status");
       }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  async function handleSubmitOldV2(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    try {
+      let url = "http://localhost:3344/statuses";
+      let method = "POST";
+
+      if (formValues.id) {
+        url += `/${formValues.id}`;
+        method = "PUT";
+      }
+
+      const formJson = JSON.stringify(formValues);
+
+      const response = await api.post(url, formJson, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+
+      if (response.status === 201) {
+        console.log("Status created successfully!");
+        fetchDataStatus("statuses", setStatuses, "");
+        setFormValues({ id: "", name: "", companyId: company?.id });
+      } else {
+        console.error("Error creating status");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    try {
+      let url = "http://localhost:3344/statuses";
+      let method = "POST";
+
+      if (formValues.id) {
+        url += `/${formValues.id}`;
+        method = "PUT";
+      }
+
+      const formJson = JSON.stringify(formValues);
+
+      api.post(url, formJson, {
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        }
+      }).then(response => {
+        if (response.status === 201) {
+          console.log("Status created successfully!");
+          console.error(response.status);
+          console.error(response.statusText);
+          fetchDataStatus("statuses", setStatuses, "");
+          setFormValues({ id: "", name: "", companyId: company?.id });
+        } else {
+          console.error(response.status);
+          console.error(response.data);
+          console.error("Error creating status");
+        }
+      }).catch(error => {
+        alert(error);
+        console.error(error);
+        // signOut();
+      });
     } catch (error) {
       console.error("Error:", error);
     }
