@@ -79,6 +79,7 @@ export function useGrievances() {
   // Preenche o formulário com os dados do registro selecionado apenas na montagem inicial do componente
   useEffect(() => {
     if (statuses.length > 0 && reasons.length > 0 && !defaultValuesSet) {
+      console.log("PAssou aki depois do sAVE????")
       const defaultDepartment = departments.find((department) => department.name === "Anônimo");
       const defaultReason = reasons.find((reason) => reason.name === "Não categorizado");
       const defaultStatus = statuses.find((status) => status.name === "Recebido");
@@ -209,51 +210,42 @@ export function useGrievances() {
         headers: {
           "Content-Type": "application/json",
         },
-
       });
-
-      console.log("Analisando o RESPONSE!");
-      console.log(response);
 
       setProtocol(response.data.protocol);
 
-      // if (response.ok) {
-      //   console.log("Analisando o RESPONSE!");
-      //   console.log(response);
-      //   console.log(response.body);
-      //   console.log(response.formData);
-      //   console.log(response.status);
-      //   console.log("Grievance created successfully!");
-      //   // fetchData("grievances", setGrievances, "");
-      //   setFormGrievance({
-      //     id: "",
-      //     isAnonymous: true,
-      //     isOccuredInYourCompany: true,
-      //     isHaveAWitness: false,
-      //     protocol: "",
-      //     grievanceDescription: "",
-      //     witness: "",
-      //     witnessDepartmentId: "",
-      //     witnessDepartment: "",
-      //     companyId: company?.id,
-      //     tradeName: "",
-      //     reasonId: "",
-      //     reasonName: "",
-      //     userId: user?.id,
-      //     userName: "",
-      //     userEmail: "",
-      //     branchId: "c18f69df-7ed8-480d-9f25-1bb19e2df2ba",
-      //     departmentId: "",
-      //     departmentName: "",
-      //     factId: "",
-      //     factName: "",
-      //     createdAt: new Date(),
-      //     statusId: "",
-      //     statusName: "",
-      //   });
-      // } else {
-      //   console.error("Error creating grievance");
-      // }
+      if (response.status === 201) {
+        setDefaultValuesSet(false);
+
+        // setFormGrievance({
+        //   id: "",
+        //   isAnonymous: true,
+        //   isOccuredInYourCompany: true,
+        //   isHaveAWitness: false,
+        //   protocol: "",
+        //   grievanceDescription: "",
+        //   witness: "",
+        //   witnessDepartmentId: "",
+        //   witnessDepartment: "",
+        //   companyId: company?.id,
+        //   tradeName: "",
+        //   reasonId: "",
+        //   reasonName: "",
+        //   userId: user?.id,
+        //   userName: "",
+        //   userEmail: "",
+        //   branchId: "c18f69df-7ed8-480d-9f25-1bb19e2df2ba",
+        //   departmentId: "",
+        //   departmentName: "",
+        //   factId: "",
+        //   factName: "",
+        //   createdAt: new Date(),
+        //   statusId: "",
+        //   statusName: "",
+        // });
+      } else {
+        console.error("Error creating grievance");
+      }
     } catch (error) {
       console.error("Error:", error);
       setProtocol("error");
