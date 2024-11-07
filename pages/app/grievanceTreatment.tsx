@@ -460,10 +460,11 @@ function GrievanceTreatment() {
 
       {isModalOpen && (
         <ModalResolve
-          modalHeader="Registro de Reclamações"
-          modalBody="Sua reclamação foi registrada com sucesso! Acompanhe seu protocolo para os demais andamentos!"
+          modalHeader="Tratamento de Reclamações"
+          modalBody="Reclamação encaminhada para tratamento."
           onClose={closeModal}
           successMessage={true}
+          protocolMessage={false}
         />
       )};
     </Layout>

@@ -3,10 +3,10 @@ import React, { useState } from 'react'
 import PageTitle from 'example/components/Typography/PageTitle'
 import Layout from 'example/containers/Layout'
 
+import ModalRsolveForm from 'components/Modal/ModalRsolveForm'
 import TableRsolve from 'components/Table/TableRsolve'
 import { useGrievances } from 'hooks/Grievance/useGrievances'
 import { useTables } from 'hooks/Table/useTable'
-import ModalRsolveForm from 'components/Modal/ModalRsolveForm'
 import { useModals } from 'hooks/Modal/useModals'
 import { useGrievanceTreatment } from 'hooks/GrievanceTreatment/useGrievanceTreament'
 
@@ -34,7 +34,7 @@ function GrievanceConsulting() {
   // pagination change control
   function onPageChangeTable(p: number) {
     setPageTable(p);
-  }  
+  }
 
   return (
     <Layout>
@@ -58,16 +58,16 @@ function GrievanceConsulting() {
         onDelete={openDeleteModal}
       />
 
-    {isDeleteModalOpen && (
-      <ModalRsolveForm
-        data={modal}
-        formData={formData}
-        modalHeader="Reclamação"
-        onClose={closeDeleteModal}
-        onConfirm={handleSubmit}
-        successMessage={isSuccess}
-      />
-    )}
+      {isDeleteModalOpen && (
+        <ModalRsolveForm
+          data={modal}
+          formData={formData}
+          modalHeader="Reclamação"
+          onClose={closeDeleteModal}
+          onConfirm={handleSubmit}
+          successMessage={isSuccess}
+        />
+      )}
     </Layout>
   )
 }

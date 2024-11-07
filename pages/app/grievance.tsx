@@ -97,9 +97,16 @@ function Grievance() {
 
   // Realizado a validação do formulário
   useEffect(() => {
+    const isDepartmentValid = formGrievance.departmentId.trim() !== '';
+    const isFactValid = formGrievance.factId.trim() !== '';
     const isGrievanceDescriptionValid = formGrievance.grievanceDescription.trim() !== '' && formGrievance.grievanceDescription.length >= 20;
-    setIsFormValid(isGrievanceDescriptionValid);
-  }, [formGrievance.grievanceDescription]);
+    const isWitnessDepartmentValid = formGrievance.witnessDepartmentId?.trim() !== '';
+
+    const formValidate = isDepartmentValid && isFactValid && isGrievanceDescriptionValid && isWitnessDepartmentValid;
+
+    setIsFormValid(formValidate);
+
+  }, [formGrievance.departmentId, formGrievance.factId, formGrievance.grievanceDescription, formGrievance.witnessDepartmentId]);
 
   function openEditForm(grievance: Grievance) {
     setFormGrievance(grievance); // Preenche o formulário com os dados do registro selecionado
@@ -209,7 +216,7 @@ function Grievance() {
                 value={formGrievance.companyId}
                 onChange={handleChange}
               >
-                <option value="">Selecione uma empresa</option>
+                {/* <option value="">Selecione uma empresa</option> */}
                 {companies.map((company) => (
                   <option key={company.id} value={company.id}>
                     {company.companyName}
@@ -372,6 +379,7 @@ function Grievance() {
           modalBody={protocol}
           onClose={closeModal}
           successMessage={true}
+          protocolMessage={true}
         />
       )};
     </Layout>
