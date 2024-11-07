@@ -23,7 +23,7 @@ const ModalRsolveForm: React.FC<ModalResolveProps> = ({ data, formData, modalHea
             <span className='text-white px-1 py-1'>Protocolo: </span>
             <span className='bg-lime-600 text-white px-1 py-1'>
               {data?.protocol}
-            </span>            
+            </span>
           </div>
           <div className='basis-1/2'>
             <span className='text-white px-1 py-1'>Status: </span>
@@ -33,36 +33,36 @@ const ModalRsolveForm: React.FC<ModalResolveProps> = ({ data, formData, modalHea
             <span className='text-white px-1 py-1'>Data: </span>
             <span className='bg-red-600 text-white px-1 py-1'>
               {data?.createdAt}
-            </span>            
+            </span>
           </div>
         </div>
         <div className='flex flex-row'>
           <div className='basis-2/4 px-1'>
             <Label className="mt-2">
               <span>Nome</span>
-                <Input
-                  name="name"
-                  // value={formValues.name}
-                  // onChange={handleChange} 
-                  value={data?.userName}
-                  readOnly={true}
-                  className="mt-1"
-                  // disabled={true}
-                />
+              <Input
+                name="name"
+                // value={formValues.name}
+                // onChange={handleChange} 
+                value={data?.userName}
+                readOnly={true}
+                className="mt-1"
+              // disabled={true}
+              />
             </Label>
           </div>
           <div className='basis-2/4 px-1'>
             <Label className="mt-2">
               <span>Email</span>
-                <Input
-                  name="email"
-                  // value={formValues.name}
-                  // onChange={handleChange} 
-                  value={data?.userEmail}
-                  readOnly={true}
-                  className="mt-1"
-                  // disabled={true}
-                />
+              <Input
+                name="email"
+                // value={formValues.name}
+                // onChange={handleChange} 
+                value={data?.userEmail}
+                readOnly={true}
+                className="mt-1"
+              // disabled={true}
+              />
             </Label>
           </div>
         </div>
@@ -70,29 +70,29 @@ const ModalRsolveForm: React.FC<ModalResolveProps> = ({ data, formData, modalHea
           <div className='basis-2/4 px-1'>
             <Label className="mt-2">
               <span>Empresa</span>
-                <Input
-                  name="company"
-                  // value={formValues.name}
-                  // onChange={handleChange} 
-                  value={data?.tradeName}
-                  readOnly={true}
-                  className="mt-1"
-                  // disabled={true}
-                />
+              <Input
+                name="company"
+                // value={formValues.name}
+                // onChange={handleChange} 
+                value={data?.tradeName}
+                readOnly={true}
+                className="mt-1"
+              // disabled={true}
+              />
             </Label>
           </div>
           <div className='basis-2/4 px-1'>
             <Label className="mt-2">
               <span>Departamento</span>
-                <Input
-                  name="department"
-                  // value={formValues.name}
-                  // onChange={handleChange}
-                  value={data?.departmentName}
-                  readOnly={true}
-                  className="mt-1 text-lime-600"
-                  // disabled={true}
-                />
+              <Input
+                name="department"
+                // value={formValues.name}
+                // onChange={handleChange}
+                value={data?.departmentName}
+                readOnly={true}
+                className="mt-1 text-lime-600"
+              // disabled={true}
+              />
             </Label>
           </div>
         </div>
@@ -100,50 +100,51 @@ const ModalRsolveForm: React.FC<ModalResolveProps> = ({ data, formData, modalHea
           <div className='basis-2/4 px-1'>
             <Label className="mt-2">
               <span>Testemunha</span>
-                <Input
-                  name="witness"
-                  // value={formValues.name}
-                  // onChange={handleChange} 
-                  value={data?.witness}
-                  readOnly={true}
-                  className="mt-1"
-                  // disabled={true}
-                />
+              <Input
+                name="witness"
+                // value={formValues.name}
+                // onChange={handleChange} 
+                value={data?.witness}
+                readOnly={true}
+                className="mt-1"
+              // disabled={true}
+              />
             </Label>
           </div>
           <div className='basis-2/4 px-1'>
             <Label className="mt-2">
               <span>Departamento</span>
-                <Input
-                  name="witnessDepartment"
-                  // value={formValues.name}
-                  // onChange={handleChange}
-                  value={data?.witnessDepartment}
-                  readOnly={true}
-                  className="mt-1"
-                  // disabled={true}
-                />
+              <Input
+                name="witnessDepartment"
+                // value={formValues.name}
+                // onChange={handleChange}
+                value={data?.witnessDepartment}
+                readOnly={true}
+                className="mt-1"
+              // disabled={true}
+              />
             </Label>
-          </div>           
+          </div>
         </div>
         <Label className="mt-2 px-1">
-          <span>Reclamação/Queixa</span>
-          <Textarea 
-            className="mt-1" 
+          <span>{data?.grievanceDescription ? "Reclamação/Queixa" : "Denúncia"}</span>
+          {/* <span>Reclamação/Queixa</span> */}
+          <Textarea
+            className="mt-1"
             rows={6}
             // disabled={true}
-            value={data?.grievanceDescription}
+            value={data?.grievanceDescription || data?.complaintDescription}
             name="grievanceDescription"
             readOnly={true}
-            // value={formValues.grievanceDescription}
-            // onChange={handleChange} 
+          // value={formValues.grievanceDescription}
+          // onChange={handleChange} 
           />
         </Label>
       </ModalBody>
       <ModalFooter>
-          <Button className="bg-lime-600 hover:bg-lime-500" onClick={onClose}>
-            Ok!
-          </Button>
+        <Button className="bg-lime-600 hover:bg-lime-500" onClick={onClose}>
+          Ok!
+        </Button>
         {/* ) : (
           // Mostra os botões "Cancelar" e "Confirmar" para modal de exclusão/inativação
           <>

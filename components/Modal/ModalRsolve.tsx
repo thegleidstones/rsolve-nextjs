@@ -7,20 +7,31 @@ type ModalResolveProps = {
   onClose: () => void;
   onConfirm?: () => void; // O onConfirm é opcional
   successMessage?: boolean; // Adicionamos um flag para identificar se é uma mensagem de sucesso
+  protocolMessage?: boolean; // Adicionamos um flag para identificar se é uma mensagem de sucesso
 };
 
-const ModalResolve: React.FC<ModalResolveProps> = ({ modalHeader, modalBody, onConfirm, onClose, successMessage }) => {
+const ModalResolve: React.FC<ModalResolveProps> = ({ modalHeader, modalBody, onConfirm, onClose, successMessage, protocolMessage }) => {
   return (
     <Modal isOpen={true} onClose={onClose}>
       <ModalHeader>{modalHeader}</ModalHeader>
       <ModalBody>
         <br></br>
-        <span>
-          O número do protocolo da sua reclamação é:
-        </span>
-        <span className='bg-lime-600 text-white ml-3 px-1 py-1'>
-          {modalBody}
-        </span>
+        {protocolMessage ? (
+          <>
+            <span>
+              O número do protocolo é:
+            </span>
+            <span className='bg-lime-600 text-white ml-3 px-1 py-1'>
+              {modalBody}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className='bg-lime-600 text-white ml-3 px-1 py-1'>
+              {modalBody}
+            </span>
+          </>
+        )}
       </ModalBody>
       <ModalFooter>
         {successMessage ? (
