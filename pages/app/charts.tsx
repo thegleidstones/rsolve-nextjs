@@ -29,7 +29,7 @@ function Charts() {
     Title,
     Tooltip,
     Legend
-  )
+  );
 
   return (
     <Layout>
