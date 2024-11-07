@@ -1,22 +1,23 @@
 import Link from 'next/link'
-import routes, { routeIsActive } from 'routes/sidebar'
+import { SideBar } from 'routes/sidebar'
 import * as Icons from 'icons'
 import { IIcon } from 'icons'
 import SidebarSubmenu from './SidebarSubmenu'
 import { Button } from '@roketid/windmill-react-ui'
 import { useRouter } from 'next/router'
 
-function Icon({ icon, ...props }: IIcon){
+function Icon({ icon, ...props }: IIcon) {
   // @ts-ignore
-  const Icon= Icons[icon]
+  const Icon = Icons[icon]
   return <Icon {...props} />
 }
 
-interface ISidebarContent{
+interface ISidebarContent {
   linkClicked: () => void
 }
 
 function SidebarContent({ linkClicked }: ISidebarContent) {
+  const { routes, routeIsActive } = SideBar();
   const { pathname } = useRouter();
   const appName = process.env.NEXT_PUBLIC_APP_NAME
 
@@ -42,11 +43,10 @@ function SidebarContent({ linkClicked }: ISidebarContent) {
                 scroll={false}
               >
                 <a
-                  className={`inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 ${
-                    routeIsActive(pathname, route)
-                      ? 'dark:text-gray-100 text-gray-800'
-                      : ''
-                  }`}
+                  className={`inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200 ${routeIsActive(pathname, route)
+                    ? 'dark:text-gray-100 text-gray-800'
+                    : ''
+                    }`}
                   onClick={linkClicked}
                 >
                   {routeIsActive(pathname, route) && (
