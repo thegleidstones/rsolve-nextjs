@@ -2,6 +2,21 @@ import { fetchData } from "hooks/FetchData/fecthData"
 import { useEffect, useState } from "react"
 import { amberColors, blueColors, cyanColors, greenColors, newColorGenerator, orangeColors, redColors, tealColors, yellowColors } from "utils/colors";
 
+type AnualCount = {
+  janeiro: number,
+  fevereiro: number,
+  marco: number,
+  abril: number,
+  maio: number,
+  junho: number,
+  julho: number,
+  agosto: number,
+  setembro: number,
+  outubro: number,
+  novembro: number,
+  dezembro: number
+}
+
 type GrievanceCompany = {
   company: string;
   total: number;
@@ -39,6 +54,8 @@ interface ILegends {
 
 export function useCharts() {
   //Criando os estados necessários para a aplicação
+  const [complaintsAnualCount, setComplaintsAnualCount] = useState<AnualCount[]>([]);
+  const [grievancesAnualCount, setGrievancesAnualCount] = useState<AnualCount[]>([]);
   const [grievancesAnonymity, setGrievancesAnonymity] = useState<GrievanceAnonymity[]>([]);
   const [grievancesCompany, setGrievancesCompany] = useState<GrievanceCompany[]>([]);
   const [grievancesDepartment, setGrievancesDepartment] = useState<GrievanceDepartment[]>([]);
@@ -51,6 +68,8 @@ export function useCharts() {
   const [reason, setReason] = useState<string[]>([]);
   const [status, setStatus] = useState<string[]>([]);
   const [witness, setWitness] = useState<string[]>([]);
+  const [countAnualComplaint, setCountAnualComplaint] = useState<number[]>([]);
+  const [countAnualGrievance, setCountAnualGrievance] = useState<number[]>([]);
   const [countByAnonymity, setCountByAnonymity] = useState<number[]>([]);
   const [countByCompany, setCountByCompany] = useState<number[]>([]);
   const [countByDepartment, setCountByDepartment] = useState<number[]>([]);
@@ -66,6 +85,17 @@ export function useCharts() {
 
 
   // Buscando dados da API
+  useEffect(() => {
+    fetchData("grievances/view/count/anual", setGrievancesAnualCount, "");
+  }, []);
+
+  console.log("** grievancesAnualCount **");
+  console.log(grievancesAnualCount);
+
+  useEffect(() => {
+    fetchData("complaints/view/count/anual", setComplaintsAnualCount, "");
+  }, []);
+
   useEffect(() => {
     fetchData("grievances/view/count/anonymity", setGrievancesAnonymity, "");
   }, []);
@@ -93,6 +123,8 @@ export function useCharts() {
   // Atualizo os dados vindos de Grievances, 
   // e os separo em três vetores, para preencher os dados do gráfico
   useEffect(() => {
+    const newGrievancesAnualCount: number[] = [];
+    const newComplaintsAnualCount: number[] = [];
     const newAnonymity: string[] = [];
     const newCompany: string[] = [];
     const newDepartment: string[] = [];
@@ -111,6 +143,39 @@ export function useCharts() {
     let newColorByReason: string[] = [];
     let newColorByStatus: string[] = [];
     let newColorByWitness: string[] = [];
+
+    complaintsAnualCount.forEach((complaintAnualCount) => {
+      newComplaintsAnualCount.push(complaintAnualCount.janeiro);
+      newComplaintsAnualCount.push(complaintAnualCount.fevereiro);
+      newComplaintsAnualCount.push(complaintAnualCount.marco);
+      newComplaintsAnualCount.push(complaintAnualCount.abril);
+      newComplaintsAnualCount.push(complaintAnualCount.maio);
+      newComplaintsAnualCount.push(complaintAnualCount.junho);
+      newComplaintsAnualCount.push(complaintAnualCount.julho);
+      newComplaintsAnualCount.push(complaintAnualCount.agosto);
+      newComplaintsAnualCount.push(complaintAnualCount.setembro);
+      newComplaintsAnualCount.push(complaintAnualCount.outubro);
+      newComplaintsAnualCount.push(complaintAnualCount.novembro);
+      newComplaintsAnualCount.push(complaintAnualCount.dezembro);
+    });
+
+    console.log("/** newComplaintsAnualCount **/");
+    console.log(newComplaintsAnualCount);
+
+    grievancesAnualCount.forEach((grievanceAnualCount) => {
+      newGrievancesAnualCount.push(grievanceAnualCount.janeiro);
+      newGrievancesAnualCount.push(grievanceAnualCount.fevereiro);
+      newGrievancesAnualCount.push(grievanceAnualCount.marco);
+      newGrievancesAnualCount.push(grievanceAnualCount.abril);
+      newGrievancesAnualCount.push(grievanceAnualCount.maio);
+      newGrievancesAnualCount.push(grievanceAnualCount.junho);
+      newGrievancesAnualCount.push(grievanceAnualCount.julho);
+      newGrievancesAnualCount.push(grievanceAnualCount.agosto);
+      newGrievancesAnualCount.push(grievanceAnualCount.setembro);
+      newGrievancesAnualCount.push(grievanceAnualCount.outubro);
+      newGrievancesAnualCount.push(grievanceAnualCount.novembro);
+      newGrievancesAnualCount.push(grievanceAnualCount.dezembro);
+    });
 
     grievancesAnonymity.forEach((grievanceAnonymity) => {
       newAnonymity.push(grievanceAnonymity.anonymity);
@@ -154,6 +219,8 @@ export function useCharts() {
 
     newColorByWitness = newColorGenerator(newWitness, blueColors);
 
+    setCountAnualComplaint(newComplaintsAnualCount);
+    setCountAnualGrievance(newGrievancesAnualCount);
     setAnonymity(newAnonymity);
     setCountByAnonymity(newCountByAnonymity);
     setColorByAnonymity(newColorByAnonymity);
@@ -172,7 +239,7 @@ export function useCharts() {
     setWitness(newWitness);
     setCountByWitness(newCountByWitness);
     setColorByWitness(newColorByWitness);
-  }, [grievancesAnonymity, grievancesCompany, grievancesDepartment, grievancesReason, grievancesStatus, grievancesWitness]);
+  }, [grievancesAnualCount, complaintsAnualCount, grievancesAnonymity, grievancesCompany, grievancesDepartment, grievancesReason, grievancesStatus, grievancesWitness]);
 
 
   // Criando as legendas para o gráfico de doughnut (rosquinha)
@@ -342,91 +409,111 @@ export function useCharts() {
     },
   }
 
-  // const lineOptions = {
-  //   data: {
-  //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  //     datasets: [
-  //       {
-  //         label: 'Organic',
-  //         /**
-  //          * These colors come from Tailwind CSS palette
-  //          * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
-  //          */
-  //         backgroundColor: '#0694a2',
-  //         borderColor: '#0694a2',
-  //         data: [43, 48, 40, 54, 67, 73, 70],
-  //         fill: false,
-  //       },
-  //       {
-  //         label: 'Paid',
-  //         fill: false,
-  //         /**
-  //          * These colors come from Tailwind CSS palette
-  //          * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
-  //          */
-  //         backgroundColor: '#7e3af2',
-  //         borderColor: '#7e3af2',
-  //         data: [24, 50, 64, 74, 52, 51, 65],
-  //       },
-  //     ],
-  //   },
-  //   options: {
-  //     responsive: true,
-  //     tooltips: {
-  //       mode: 'index',
-  //       intersect: false,
-  //     },
-  //     scales: {
-  //       x: {
-  //         display: true,
-  //         scaleLabel: {
-  //           display: true,
-  //           labelString: 'Month',
-  //         },
-  //       },
-  //       y: {
-  //         display: true,
-  //         scaleLabel: {
-  //           display: true,
-  //           labelString: 'Value',
-  //         },
-  //       },
-  //     },
-  //   },
-  //   legend: {
-  //     display: false,
-  //   },
-  // }
+  const lineOptions = {
+    data: {
+      labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+      datasets: [
+        {
+          label: 'Denúncias',
+          fill: false,
+          /**
+           * These colors come from Tailwind CSS palette
+           * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
+           */
+          backgroundColor: '#7e3af2',
+          borderColor: '#7e3af2',
+          data: countAnualComplaint,
+        },
+        {
+          label: 'Reclamações',
+          /**
+           * These colors come from Tailwind CSS palette
+           * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
+           */
+          backgroundColor: '#0694a2',
+          borderColor: '#0694a2',
+          data: countAnualGrievance,
+          fill: false,
+        },
+        {
+          label: 'Denúncias',
+          fill: false,
+          /**
+           * These colors come from Tailwind CSS palette
+           * https://tailwindcss.com/docs/customizing-colors/#default-color-palette
+           */
+          backgroundColor: '#7e3af2',
+          borderColor: '#7e3af2',
+          data: countAnualComplaint,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      tooltips: {
+        mode: 'index',
+        intersect: false,
+      },
+      scales: {
+        x: {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Month',
+          },
+        },
+        y: {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: 'Value',
+          },
+        },
+      },
+    },
+    legend: {
+      display: false,
+    },
+  }
 
-  // const barOptions = {
-  //   data: {
-  //     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-  //     datasets: [
-  //       {
-  //         label: 'Shoes',
-  //         backgroundColor: '#0694a2',
-  //         // borderColor: window.chartColors.red,
-  //         borderWidth: 1,
-  //         data: [-3, 14, 52, 74, 33, 90, 70],
-  //       },
-  //       {
-  //         label: 'Bags',
-  //         backgroundColor: '#7e3af2',
-  //         // borderColor: window.chartColors.blue,
-  //         borderWidth: 1,
-  //         data: [66, 33, 43, 12, 54, 62, 84],
-  //       },
-  //     ],
-  //   },
-  //   options: {
-  //     responsive: true,
-  //   },
-  //   legend: {
-  //     display: false,
-  //   },
-  // }
+  const barOptions = {
+    data: {
+      labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+      datasets: [
+        {
+          label: 'Reclamações',
+          backgroundColor: '#0694a2',
+          // borderColor: window.chartColors.red,
+          borderWidth: 1,
+          data: countAnualGrievance,
+        },
+        {
+          label: 'Denúncias',
+          backgroundColor: '#7e3af2',
+          // borderColor: window.chartColors.blue,
+          borderWidth: 1,
+          data: countAnualComplaint,
+        },
+        {
+          label: 'Denúncias',
+          backgroundColor: '#7e3af2',
+          // borderColor: window.chartColors.blue,
+          borderWidth: 1,
+          data: countAnualComplaint,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+    },
+    legend: {
+      display: false,
+    },
+  }
 
   return {
+    barOptions,
+    lineOptions,
     grievancesReason,
     setGrievancesReason,
     grievancesStatus,
