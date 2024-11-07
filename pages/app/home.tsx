@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Doughnut, Line } from 'react-chartjs-2'
+import { Bar, Doughnut, Line } from 'react-chartjs-2'
 
 import CTA from 'example/components/CTA'
 import InfoCard from 'example/components/Cards/InfoCard'
@@ -41,28 +41,47 @@ import {
   Title,
   Tooltip,
   Legend,
+  BarElement,
 } from 'chart.js'
 import SectionTitle from 'example/components/Typography/SectionTitle'
 import TableRsolve from 'components/Table/TableRsolve'
 import { useGrievances } from 'hooks/Grievance/useGrievances'
 import { useTables } from 'hooks/Table/useTable'
 import { fetchData } from 'hooks/FetchData/fecthData'
+import { useCharts } from 'hooks/Charts/useCharts'
 
 function Home() {
   const [statuses, setStatuses] = useState([]);
-  const [countByStatuses, setCountByStatuses] = useState([]);
-  const { grievances } = useGrievances();
+  const [countGrievancesByStatuses, setCountGrievancesByStatuses] = useState([]);
+  const [countComplaintsByStatuses, setCountComplaintsByStatuses] = useState([]);
+  const { barOptions, lineOptions } = useCharts();
+  // const { grievances } = useGrievances();
+  Chart.register(
+    ArcElement,
+    BarElement,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend
+  );
 
   useEffect(() => {
     fetchData("statuses", setStatuses, "");
   }, []);
 
   useEffect(() => {
-    fetchData("grievances/view/count/status", setCountByStatuses, "");
+    fetchData("complaints/view/count/status", setCountComplaintsByStatuses, "");
+  }, []);
+
+  useEffect(() => {
+    fetchData("grievances/view/count/status", setCountGrievancesByStatuses, "");
   }, []);
 
   console.log("Count By Statuses");
-  console.log(countByStatuses);
+  console.log(countGrievancesByStatuses);
 
   Chart.register(
     ArcElement,
@@ -76,25 +95,25 @@ function Home() {
   )
 
   // setup pages control for every table
-  const [pageTable, setPageTable] = useState(1);
+  // const [pageTable, setPageTable] = useState(1);
 
-  // pagination setup
-  const resultsPerPage = 5;
-  const totalResults = grievances.length;
+  // // pagination setup
+  // const resultsPerPage = 5;
+  // const totalResults = grievances.length;
 
-  const {
-    displayedGrievances: displayedTableGrievances,
-    // ... outras funções e estados do useTables
-  } = useTables({
-    data: grievances,
-    pageTable,
-    resultsPerPage,
-  });
+  // const {
+  //   displayedGrievances: displayedTableGrievances,
+  //   // ... outras funções e estados do useTables
+  // } = useTables({
+  //   data: grievances,
+  //   pageTable,
+  //   resultsPerPage,
+  // });
 
   // pagination change control
-  function onPageChangeTable(p: number) {
-    setPageTable(p);
-  }
+  // function onPageChangeTable(p: number) {
+  //   setPageTable(p);
+  // }
 
   // const [page, setPage] = useState(1)
   // const [data, setData] = useState<ITableData[]>([])
@@ -136,10 +155,9 @@ function Home() {
       {/* <PageTitle>Home</PageTitle> */}
 
       {/* <!-- Cards --> */}
-      <SectionTitle>Denúncias</SectionTitle>
+      {/* <SectionTitle>Denúncias</SectionTitle>
       <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-5">
         <InfoCard title="Recebidas" value="35">
-          {/* @ts-ignore */}
           <RoundIcon
             icon={PeopleIcon}
             iconColorClass="text-orange-500 dark:text-orange-100"
@@ -149,7 +167,6 @@ function Home() {
         </InfoCard>
 
         <InfoCard title="Em Tratamento" value="6">
-          {/* @ts-ignore */}
           <RoundIcon
             icon={MoneyIcon}
             iconColorClass="text-green-500 dark:text-green-100"
@@ -159,7 +176,6 @@ function Home() {
         </InfoCard>
 
         <InfoCard title="Pendentes" value="19">
-          {/* @ts-ignore */}
           <RoundIcon
             icon={CartIcon}
             iconColorClass="text-blue-500 dark:text-blue-100"
@@ -169,7 +185,6 @@ function Home() {
         </InfoCard>
 
         <InfoCard title="Improcedente" value="19">
-          {/* @ts-ignore */}
           <RoundIcon
             icon={CartIcon}
             iconColorClass="text-blue-500 dark:text-blue-100"
@@ -179,7 +194,6 @@ function Home() {
         </InfoCard>
 
         <InfoCard title="Finalizadas" value="35">
-          {/* @ts-ignore */}
           <RoundIcon
             icon={ChatIcon}
             iconColorClass="text-teal-500 dark:text-teal-100"
@@ -187,12 +201,12 @@ function Home() {
             className="mr-4"
           />
         </InfoCard>
-      </div>
+      </div> */}
 
       {/* <!-- Cards --> */}
-      <SectionTitle>Reclamações</SectionTitle>
+      <SectionTitle>Denúncias</SectionTitle>
       <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-5">
-        {countByStatuses.map((countByStatus) => (
+        {countComplaintsByStatuses.map((countByStatus) => (
           <InfoCard key={countByStatus.id} title={countByStatus.status} value={countByStatus.total}>
             {/* @ts-ignore */}
             <RoundIcon
@@ -205,7 +219,35 @@ function Home() {
         ))}
       </div>
 
-      <TableRsolve
+      {/* <!-- Cards --> */}
+      <SectionTitle>Reclamações</SectionTitle>
+      <div className="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-5">
+        {countGrievancesByStatuses.map((countByStatus) => (
+          <InfoCard key={countByStatus.id} title={countByStatus.status} value={countByStatus.total}>
+            {/* @ts-ignore */}
+            <RoundIcon
+              icon={PeopleIcon}
+              iconColorClass="text-orange-500 dark:text-orange-100"
+              bgColorClass={getColorBasedOnStatus(countByStatus.status)}
+              className="mr-4"
+            />
+          </InfoCard>
+        ))}
+      </div>
+
+      <div className="grid gap-6 mb-8 md:grid-cols-1">
+        {/* <ChartCard title="Reclamações X Denúncias">
+          <Bar {...barOptions} />
+          <ChartLegend legends={barLegends} />
+        </ChartCard> */}
+        <ChartCard title="Reclamações X Denúncias">
+          <Line {...lineOptions} />
+          {/* <ChartLegend legends={lineLegends} /> */}
+        </ChartCard>
+      </div>
+
+
+      {/* <TableRsolve
         data={grievances}
         columns={[
           // { label: 'ID', key: 'id' },
@@ -221,7 +263,7 @@ function Home() {
         onPageChangeTable={onPageChangeTable}
         onEdit={null}
         onDelete={null}
-      />
+      /> */}
 
       {/* <TableContainer>
         <Table>
